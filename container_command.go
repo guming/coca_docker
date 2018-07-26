@@ -22,7 +22,7 @@ var runCommand=cli.Command{
 			return fmt.Errorf("missing the container command.")
 		}
 		cmd:=context.Args().Get(0)
-		tty:=context.Bool("tti")
+		tty:=context.Bool("ti")
 		Run(cmd,tty)
 		return nil
 	},
