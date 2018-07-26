@@ -17,7 +17,7 @@ var runCommand=cli.Command{
 			Usage:"tty enabled",
 		},
 	},
-	Action: func(context cli.Context) error {
+	Action: func(context *cli.Context) error {
 		if len(context.Args())<1{
 			return fmt.Errorf("missing the container command.")
 		}
@@ -31,7 +31,7 @@ var runCommand=cli.Command{
 var initCommand=cli.Command{
 	Name:"init",
 	Usage: `init container`,
-	Action: func(context cli.Context) error {
+	Action: func(context *cli.Context) error {
 		log.Infof("init container")
 		cmd:=context.Args().Get(0)
 		log.Infof("initcommand %s", cmd)
