@@ -8,7 +8,7 @@ import (
 )
 
 var runCommand=cli.Command{
-	Name:"runCommand",
+	Name:"run",
 	Usage: `Create a container with namespace and cgroups limit
 			coca_docker run -ti [command]`,
 	Flags:[]cli.Flag{
