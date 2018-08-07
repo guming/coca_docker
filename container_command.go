@@ -17,6 +17,18 @@ var runCommand=cli.Command{
 			Name:"ti",
 			Usage:"tty enabled",
 		},
+		cli.StringFlag{
+			Name:"m",
+			Usage:"memory limit",
+		},
+		cli.StringFlag{
+			Name:"cpuset",
+			Usage:"cpuset limit",
+		},
+		cli.StringFlag{
+			Name:"cpushare",
+			Usage:"cpushare limit",
+		},
 	},
 	Action: func(context *cli.Context) error {
 		if len(context.Args())<1{
