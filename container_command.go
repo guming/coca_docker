@@ -34,14 +34,17 @@ var runCommand=cli.Command{
 		if len(context.Args())<1{
 			return fmt.Errorf("missing the container command.")
 		}
-		cmd:=context.Args()
+		var cmdArray []string
+		for _, arg := range context.Args() {
+			cmdArray = append(cmdArray, arg)
+		}
 		tty:=context.Bool("ti")
 		config:=&subsystems.ResourceConfig{
 			MemoryLimit:context.String("m"),
 			Cpushare:context.String("cpushare"),
 			Cpuset:context.String("cpuset"),
 		}
-		Run(cmd,tty,config)
+		Run(cmdArray,tty,config)
 		return nil
 	},
 }
