@@ -5,6 +5,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/coca_docker/container"
+	"github.com/coca_docker/cgroup/subsystems"
 )
 
 var runCommand=cli.Command{
@@ -21,9 +22,14 @@ var runCommand=cli.Command{
 		if len(context.Args())<1{
 			return fmt.Errorf("missing the container command.")
 		}
-		cmd:=context.Args().Get(0)
+		cmd:=context.Args()
 		tty:=context.Bool("ti")
-		Run(cmd,tty)
+		config:=&subsystems.ResourceConfig{
+			MemoryLimit:context.String("m"),
+			Cpushare:context.String("cpushare"),
+			Cpuset:context.String("cpuset"),
+		}
+		Run(cmd,tty,config)
 		return nil
 	},
 }
@@ -34,8 +40,8 @@ var initCommand=cli.Command{
 	Action: func(context *cli.Context) error {
 		log.Infof("init container")
 		cmd:=context.Args().Get(0)
-		log.Infof("initcommand %s", cmd)
-		err:=container.RunContainerInit(cmd,nil)
+		log.Infof("init command %s", cmd)
+		err:=container.RunContainerInit()
 		return err
 	},
 }
