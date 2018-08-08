@@ -80,7 +80,7 @@ func pivot_root(newroot string) error {
 
 	log.Infof("root is %s",newroot)
 
-	err:=syscall.Mount(newroot,newroot,"bind",uintptr(syscall.MS_BIND|syscall.MS_REC),"")
+	err:=syscall.Mount(newroot,newroot,"",uintptr(syscall.MS_PRIVATE|syscall.MS_REC),"")
 	if err!=nil{
 		return err
 	}
@@ -94,7 +94,7 @@ func pivot_root(newroot string) error {
 		return err
 	}
 
-	if err:=syscall.Chdir("/");err!=nil{
+	if err:=os.Chdir("/");err!=nil{
 		return fmt.Errorf("chdir / err %v",err)
 	}
 	putold = "/.pivot_root"
@@ -122,9 +122,9 @@ func setUpMount(){
 	}
 	//mount proc
 	defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
-	if err := syscall.Mount("", "/", "", uintptr(defaultMountFlags|syscall.MS_PRIVATE|syscall.MS_REC), ""); err != nil {
-		log.Errorf("mount err %v",err)
-	}
+	//if err := syscall.Mount("", "/", "", uintptr(defaultMountFlags|syscall.MS_PRIVATE|syscall.MS_REC), ""); err != nil {
+	//	log.Errorf("mount err %v",err)
+	//}
 	syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
-	//syscall.Mount("tmpfs", "/dev", "tmpfs", uintptr(syscall.MS_NOSUID|syscall.MS_STRICTATIME), "mode=755")
+	syscall.Mount("tmpfs", "/dev", "tmpfs", uintptr(syscall.MS_NOSUID|syscall.MS_STRICTATIME), "mode=755")
 }
