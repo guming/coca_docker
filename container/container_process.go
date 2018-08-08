@@ -74,29 +74,36 @@ func readCommand() []string{
 }
 
 
-func pivot_root(root string) error {
-	log.Infof("root is %s",root)
-	err:=syscall.Mount(root,root,"bind",syscall.MS_BIND|syscall.MS_REC,"")
+func pivot_root(newroot string) error {
+
+	log.Infof("root is %s",newroot)
+
+	err:=syscall.Mount(newroot,newroot,"",syscall.MS_BIND|syscall.MS_REC,"")
 	if err!=nil{
-		return fmt.Errorf("pivot_root mount err %v",err)
+		return err
 	}
-	pivotDir:=filepath.Join(root,".pivot_root")
-	if err:=os.Mkdir(pivotDir,0777);err!=nil {
+	
+	putold:=filepath.Join(newroot,".pivot_root")
+	if err:=os.MkdirAll(putold,0700);err!=nil {
 		return err
 	}
 
-	if err:=syscall.PivotRoot(root,pivotDir);err!=nil{
-		return fmt.Errorf("pivot_root err %v",err)
+	if err:=syscall.PivotRoot(newroot,putold);err!=nil{
+		return err
 	}
 
 	if err:=syscall.Chdir("/");err!=nil{
 		return fmt.Errorf("chdir / err %v",err)
 	}
-	pivotDir=filepath.Join("/",".pivot_root")
-	if err:=syscall.Unmount(pivotDir,syscall.MNT_DETACH);err!=nil{
-		return fmt.Errorf("unmount oldroot err %v",err)
+	putold = "/.pivot_root"
+	if err := syscall.Unmount(putold, syscall.MNT_DETACH); err != nil {
+		return err
 	}
-	return os.Remove(pivotDir)
+	// remove putold
+	if err := os.RemoveAll(putold); err != nil {
+		return err
+	}
+	return nil
 }
 
 func setUpMount(){
