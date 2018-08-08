@@ -78,11 +78,11 @@ func pivot_root(newroot string) error {
 
 	log.Infof("root is %s",newroot)
 
-	err:=syscall.Mount(newroot,newroot,"",syscall.MS_BIND|syscall.MS_REC,"")
+	err:=syscall.Mount(newroot,newroot,"",uintptr(syscall.MS_PRIVATE|syscall.MS_REC),"")
 	if err!=nil{
 		return err
 	}
-	
+
 	putold:=filepath.Join(newroot,".pivot_root")
 	if err:=os.MkdirAll(putold,0700);err!=nil {
 		return err
@@ -121,5 +121,5 @@ func setUpMount(){
 	//mount proc
 	defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
 	syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
-	syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
+	syscall.Mount("tmpfs", "/dev", "tmpfs", uintptr(syscall.MS_NOSUID|syscall.MS_STRICTATIME), "mode=755")
 }
