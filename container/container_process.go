@@ -43,6 +43,7 @@ func RunContainerInit() error{
 	setUpMount()
 
 	path,err:=exec.LookPath(cmds[0])
+	log.Infof("path is %s",path)
 	if err!=nil{
 		return fmt.Errorf("command lookup path error , cmds is %s",cmds[0])
 	}
@@ -70,6 +71,7 @@ func readCommand() []string{
 		return nil
 	}
 	msg:=string(commands)
+	log.Infof("msg is %s",msg)
 	return strings.Split(msg," ")
 }
 
@@ -77,8 +79,11 @@ func readCommand() []string{
 func pivot_root(newroot string) error {
 
 	log.Infof("root is %s",newroot)
-
-	err:=syscall.Mount(newroot,newroot,"bind",uintptr(syscall.MS_BIND|syscall.MS_REC),"")
+	defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
+	if err := syscall.Mount("", "/", "", uintptr(defaultMountFlags|syscall.MS_PRIVATE|syscall.MS_REC), ""); err != nil {
+		return err
+	}
+	err:=syscall.Mount(newroot,newroot,"",uintptr(syscall.MS_BIND|syscall.MS_REC),"")
 	if err!=nil{
 		return err
 	}
@@ -119,7 +124,7 @@ func setUpMount(){
 		log.Errorf("callc pivot root err %v",err)
 	}
 	//mount proc
-	defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
-	syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
-	syscall.Mount("tmpfs", "/dev", "tmpfs", uintptr(syscall.MS_NOSUID|syscall.MS_STRICTATIME), "mode=755")
+	//defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
+	//syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
+	//syscall.Mount("tmpfs", "/dev", "tmpfs", uintptr(syscall.MS_NOSUID|syscall.MS_STRICTATIME), "mode=755")
 }

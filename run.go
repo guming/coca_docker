@@ -12,7 +12,7 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig){
 	process,writepip:=container.NewParentProcess(tty)
 	err:=process.Start()
 	if err!=nil{
-		log.Errorf("container start err %v",err.Error())
+		log.Errorf("container start err %v",err)
 	}
 	//cgroup
 	//cgroupManager:=cgroup.NewCgroupManager("coca-docker")
