@@ -29,7 +29,7 @@ func NewParentProcess(tty bool) (*exec.Cmd,*os.File){
 		cmd.Stderr=os.Stderr
 	}
 	cmd.ExtraFiles=[]*os.File{readpip}
-	cmd.Dir="/opt/busybox"
+	cmd.Dir="/root/busybox"
 	return cmd,writepip
 }
 
@@ -109,7 +109,7 @@ func setUpMount(){
 	//change rootfs
 	err=pivot_root(dir)
 	if err!=nil{
-		log.Errorf("pivot root err %v",err)
+		log.Errorf("callc pivot root err %v",err)
 	}
 	//mount proc
 	defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
