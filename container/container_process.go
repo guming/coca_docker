@@ -40,7 +40,7 @@ func RunContainerInit() error{
 		return fmt.Errorf("run container get command error, cmds is nil")
 	}
 	//mout fs
-	setUpMount()
+	//setUpMount()
 
 	path,err:=exec.LookPath(cmds[0])
 	log.Infof("path is %s",path)
