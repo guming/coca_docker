@@ -107,7 +107,10 @@ func setUpMount(){
 	}
 	log.Infof("setup mount local dir is %s",dir)
 	//change rootfs
-	pivot_root(dir)
+	err:=pivot_root(dir)
+	if err!=nil{
+		log.Errorf("pivot root err %v",err)
+	}
 	//mount proc
 	defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
 	syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
