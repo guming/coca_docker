@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"fmt"
+	"path/filepath"
 )
 
 func NewParentProcess(tty bool) (*exec.Cmd,*os.File){
@@ -28,18 +29,19 @@ func NewParentProcess(tty bool) (*exec.Cmd,*os.File){
 		cmd.Stderr=os.Stderr
 	}
 	cmd.ExtraFiles=[]*os.File{readpip}
+	cmd.Dir="/opt/busybox"
 	return cmd,writepip
 }
 
 func RunContainerInit() error{
-	//log.Infof("command %",command)
 
 	cmds:=readCommand()
 	if cmds==nil||len(cmds)==0{
 		return fmt.Errorf("run container get command error, cmds is nil")
 	}
-	//defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
-	//syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
+	//mout fs
+	setUpMount()
+
 	path,err:=exec.LookPath(cmds[0])
 	if err!=nil{
 		return fmt.Errorf("command lookup path error , cmds is %s",cmds[0])
@@ -69,4 +71,44 @@ func readCommand() []string{
 	}
 	msg:=string(commands)
 	return strings.Split(msg," ")
+}
+
+
+func pivot_root(root string) error {
+	err:=syscall.Mount(root,root,"bind",syscall.MS_BIND|syscall.MS_REC,"")
+	if err!=nil{
+		return fmt.Errorf("pivot_root mount err %v",err)
+	}
+	pivotDir:=filepath.Join(root,".pivot_root")
+	if err:=os.Mkdir(pivotDir,0777);err!=nil {
+		return err
+	}
+
+	if err:=syscall.PivotRoot(root,pivotDir);err!=nil{
+		return fmt.Errorf("pivot_root err %v",err)
+	}
+
+	if err:=os.Chdir("/");err!=nil{
+		return fmt.Errorf("chdir / err %v",err)
+	}
+	pivotDir=filepath.Join("/",".pivot_root")
+	if err:=syscall.Unmount(pivotDir,syscall.MNT_DETACH);err!=nil{
+		return fmt.Errorf("unmount oldroot err %v",err)
+	}
+	return os.Remove(pivotDir)
+}
+
+func setUpMount(){
+	dir,err:=os.Getwd()
+	if err!=nil{
+		log.Errorf("setup mount err %v",err)
+		return
+	}
+	log.Infof("setup mount local dir is %s",dir)
+	//change rootfs
+	pivot_root(dir)
+	//mount proc
+	defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
+	syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
+	syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
 }
