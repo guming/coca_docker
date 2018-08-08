@@ -107,7 +107,7 @@ func setUpMount(){
 	}
 	log.Infof("setup mount local dir is %s",dir)
 	//change rootfs
-	err:=pivot_root(dir)
+	err=pivot_root(dir)
 	if err!=nil{
 		log.Errorf("pivot root err %v",err)
 	}
