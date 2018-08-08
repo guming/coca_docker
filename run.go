@@ -4,7 +4,6 @@ import (
 	"github.com/coca_docker/container"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"github.com/coca_docker/cgroup"
 	"github.com/coca_docker/cgroup/subsystems"
 	"strings"
 )
