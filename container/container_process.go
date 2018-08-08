@@ -75,6 +75,7 @@ func readCommand() []string{
 
 
 func pivot_root(root string) error {
+	log.Infof("root is %s",root)
 	err:=syscall.Mount(root,root,"bind",syscall.MS_BIND|syscall.MS_REC,"")
 	if err!=nil{
 		return fmt.Errorf("pivot_root mount err %v",err)
@@ -88,7 +89,7 @@ func pivot_root(root string) error {
 		return fmt.Errorf("pivot_root err %v",err)
 	}
 
-	if err:=os.Chdir("/");err!=nil{
+	if err:=syscall.Chdir("/");err!=nil{
 		return fmt.Errorf("chdir / err %v",err)
 	}
 	pivotDir=filepath.Join("/",".pivot_root")
