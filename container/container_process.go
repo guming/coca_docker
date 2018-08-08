@@ -80,7 +80,7 @@ func pivot_root(newroot string) error {
 
 	log.Infof("root is %s",newroot)
 
-	err:=syscall.Mount(newroot,newroot,"",uintptr(syscall.MS_BIND|syscall.MS_REC),"")
+	err:=syscall.Mount(newroot,newroot,"bind",uintptr(syscall.MS_BIND|syscall.MS_REC),"")
 	if err!=nil{
 		return err
 	}
@@ -116,7 +116,7 @@ func setUpMount(){
 	}
 	log.Infof("setup mount local dir is %s",dir)
 	//change rootfs
-	//err=pivot_root(dir)
+	err=pivot_root(dir)
 	if err!=nil{
 		log.Errorf("callc pivot root err %v",err)
 	}
