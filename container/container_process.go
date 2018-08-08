@@ -78,7 +78,7 @@ func pivot_root(newroot string) error {
 
 	log.Infof("root is %s",newroot)
 
-	err:=syscall.Mount(newroot,newroot,"",uintptr(syscall.MS_PRIVATE|syscall.MS_REC),"")
+	err:=syscall.Mount(newroot,newroot,"bind",uintptr(syscall.MS_BIND|syscall.MS_REC),"")
 	if err!=nil{
 		return err
 	}

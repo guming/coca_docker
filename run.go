@@ -16,10 +16,10 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig){
 		log.Errorf("container start err %v",err.Error())
 	}
 	//cgroup
-	cgroupManager:=cgroup.NewCgroupManager("coca-docker")
-	defer cgroupManager.Destory()
-	cgroupManager.Set(config)
-	cgroupManager.Apply(process.Process.Pid)
+	//cgroupManager:=cgroup.NewCgroupManager("coca-docker")
+	//defer cgroupManager.Destory()
+	//cgroupManager.Set(config)
+	//cgroupManager.Apply(process.Process.Pid)
 	sendCommandToChild(writepip,command)
 	process.Wait()
 	os.Exit(-1)
