@@ -132,3 +132,17 @@ func setUpMount(){
 	syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
 	syscall.Mount("tmpfs", "/dev", "tmpfs", uintptr(syscall.MS_NOSUID|syscall.MS_STRICTATIME), "mode=755")
 }
+
+
+//Create a AUFS filesystem as container root workspace
+func NewWorkSpace(rootURL string, mntURL string) {
+	CreateReadOnlyLayer(rootURL)
+	CreateWriteLayer(rootURL)
+	CreateMountPoint(rootURL, mntURL)
+}
+
+//Delete the AUFS filesystem while container exit
+func DeleteWorkSpace(rootURL string, mntURL string){
+	DeleteMountPoint(rootURL, mntURL)
+	DeleteWriteLayer(rootURL)
+}
