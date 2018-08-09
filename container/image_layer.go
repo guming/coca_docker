@@ -43,7 +43,7 @@ func CreateMountPoint(rootURL string, mntURL string) {
 	}
 	dirs := "dirs=" + rootURL + "writeLayer:" + rootURL + "busybox"
 	//left first rw,the second is readonly
-	cmd := exec.Command("mount", "-t", "aufs", "-o noxino", dirs, "none", mntURL)
+	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
