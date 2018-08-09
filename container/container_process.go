@@ -29,7 +29,11 @@ func NewParentProcess(tty bool) (*exec.Cmd,*os.File){
 		cmd.Stderr=os.Stderr
 	}
 	cmd.ExtraFiles=[]*os.File{readpip}
-	cmd.Dir="/root/busybox"
+	//cmd.Dir="/root/busybox"
+	mntURL := "/root/mnt/"
+	rootURL := "/root/"
+	NewWorkSpace(rootURL, mntURL)
+	cmd.Dir = mntURL
 	return cmd,writepip
 }
 
@@ -118,13 +122,13 @@ func setUpMount(){
 	//change rootfs
 	err=pivot_root(dir)
 	if err!=nil{
-		log.Errorf("callc pivot root err %v",err)
+		log.Errorf("call pivot root err %v",err)
 	}
-	//mount proc
+	//mount proc centos 7
 	defaultMountFlags:=syscall.MS_NOSUID|syscall.MS_NODEV|syscall.MS_NOEXEC
-	//if err := syscall.Mount("", "/", "", uintptr(defaultMountFlags|syscall.MS_PRIVATE|syscall.MS_REC), ""); err != nil {
-	//	log.Errorf("mount err %v",err)
-	//}
+	if err := syscall.Mount("", "/", "", uintptr(defaultMountFlags|syscall.MS_PRIVATE|syscall.MS_REC), ""); err != nil {
+		log.Errorf("mount err %v",err)
+	}
 	syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
 	syscall.Mount("tmpfs", "/dev", "tmpfs", uintptr(syscall.MS_NOSUID|syscall.MS_STRICTATIME), "mode=755")
 }
