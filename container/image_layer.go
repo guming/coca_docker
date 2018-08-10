@@ -51,6 +51,7 @@ func CreateMountPoint(rootURL string, mntURL string) {
 
 func DeleteMountPoint(volume string, mntURL string){
 	//first umount volume
+	log.Infof("volume:%s",volume)
 	if volume!=""{
 		cmd := exec.Command("umount", mntURL+volume)
 		cmd.Stdout=os.Stdout
