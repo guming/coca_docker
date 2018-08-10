@@ -151,12 +151,12 @@ func NewWorkSpace(rootURL string, mntURL string,volume string) {
 
 //Delete the AUFS filesystem while container exit
 func DeleteWorkSpace(rootURL string, mntURL string,volume string) {
-	volume=""
+	var volumeDir=""
 	if volume!="" && len(volume)>1 {
 		volumeDirs:=strings.Split(volume,":")
-		volume=volumeDirs[1]
+		volumeDir=volumeDirs[1]
 	}
-	DeleteMountPoint(volume, mntURL)
+	DeleteMountPoint(volumeDir, mntURL)
 	DeleteWriteLayer(rootURL)
 
 }
