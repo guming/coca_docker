@@ -80,6 +80,7 @@ func DeleteWriteLayer(rootURL string) {
 }
 
 func MountVolume(volumeDirs []string,mntURL string){
+	
 	parentVolume:=volumeDirs[0]
 	if err:=os.MkdirAll(parentVolume,0777);err!=nil{
 		log.Warnf("mkdir "+parentVolume+" error",err)
@@ -90,11 +91,12 @@ func MountVolume(volumeDirs []string,mntURL string){
 		log.Warnf("mkdir "+containerVolume+" error",err)
 	}
 	dirs:="dirs="+parentVolume
+	log.Infof("containerVolume:%s,dirs:%s",containerVolume,dirs)
 	cmd:=exec.Command("mount","-t","aufs","-o",dirs,"none",containerVolume)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		log.Errorf("%v", err)
+		log.Errorf("mount volume %v", err)
 	}
 }
 
