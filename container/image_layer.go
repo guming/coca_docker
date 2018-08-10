@@ -89,7 +89,7 @@ func MountVolume(volumeDirs []string,mntURL string){
 		log.Warnf("mkdir "+containerVolume+" error",err)
 	}
 	dirs:="dirs="+parentVolume
-	cmd:=exec.Command("mount","-t ","aufs","-o",dirs,"none",containerVolume)
+	cmd:=exec.Command("mount","-t","aufs","-o",dirs,"none",containerVolume)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
