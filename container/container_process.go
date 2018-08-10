@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-func NewParentProcess(tty bool) (*exec.Cmd,*os.File){
+func NewParentProcess(tty bool,volume string) (*exec.Cmd,*os.File){
 
 	readpip, writepip, err := NewPipe()
 
@@ -32,7 +32,8 @@ func NewParentProcess(tty bool) (*exec.Cmd,*os.File){
 	//cmd.Dir="/root/busybox"
 	mntURL := "/root/mnt/"
 	rootURL := "/root/"
-	NewWorkSpace(rootURL, mntURL)
+
+	NewWorkSpace(rootURL, mntURL,volume)
 	cmd.Dir = mntURL
 	return cmd,writepip
 }
@@ -135,14 +136,27 @@ func setUpMount(){
 
 
 //Create a AUFS filesystem as container root workspace
-func NewWorkSpace(rootURL string, mntURL string) {
+func NewWorkSpace(rootURL string, mntURL string,volume string) {
 	CreateReadOnlyLayer(rootURL)
 	CreateWriteLayer(rootURL)
 	CreateMountPoint(rootURL, mntURL)
+
+	if volume!="" && len(volume)>1 {
+		volumeDirs:=strings.Split(volume,":")
+		if len(volumeDirs)>1{
+			MountVolume(volumeDirs,mntURL)
+		}
+	}
 }
 
 //Delete the AUFS filesystem while container exit
-func DeleteWorkSpace(rootURL string, mntURL string){
-	DeleteMountPoint(rootURL, mntURL)
+func DeleteWorkSpace(rootURL string, mntURL string,volume string) {
+	volume=""
+	if volume!="" && len(volume)>1 {
+		volumeDirs:=strings.Split(volume,":")
+		volume=volumeDirs[1]
+	}
+	DeleteMountPoint(volume, mntURL)
 	DeleteWriteLayer(rootURL)
+
 }

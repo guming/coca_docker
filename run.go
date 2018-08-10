@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-func Run(command []string,tty bool,config *subsystems.ResourceConfig){
-	process,writepip:=container.NewParentProcess(tty)
+func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume string){
+	process,writepip:=container.NewParentProcess(tty,volume)
 	err:=process.Start()
 	if err!=nil{
 		log.Errorf("container start err %v",err)
@@ -23,7 +23,7 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig){
 	process.Wait()
 	mntURL := "/root/mnt/"
 	rootURL := "/root/"
-	container.DeleteWorkSpace(rootURL,mntURL)
+	container.DeleteWorkSpace(rootURL,mntURL,volume)
 	os.Exit(-1)
 }
 

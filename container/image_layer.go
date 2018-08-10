@@ -49,7 +49,17 @@ func CreateMountPoint(rootURL string, mntURL string) {
 
 
 
-func DeleteMountPoint(rootURL string, mntURL string){
+func DeleteMountPoint(volume string, mntURL string){
+	//first umount volume
+	if volume!=""{
+		cmd := exec.Command("umount", mntURL+volume)
+		cmd.Stdout=os.Stdout
+		cmd.Stderr=os.Stderr
+		if err := cmd.Run(); err != nil {
+			log.Errorf("%v",err)
+		}
+	}
+
 	cmd := exec.Command("umount", mntURL)
 	cmd.Stdout=os.Stdout
 	cmd.Stderr=os.Stderr
@@ -67,6 +77,26 @@ func DeleteWriteLayer(rootURL string) {
 		log.Errorf("remove dir %s error %v", writeURL, err)
 	}
 }
+
+func MountVolume(volumeDirs []string,mntURL string){
+	parentVolume:=volumeDirs[0]
+	if err:=os.MkdirAll(parentVolume,0777);err!=nil{
+		log.Warnf("mkdir "+parentVolume+" error",err)
+	}
+	containerDir:=volumeDirs[1]
+	containerVolume:=mntURL+containerDir
+	if err:=os.MkdirAll(containerVolume,0777);err!=nil{
+		log.Warnf("mkdir "+containerVolume+" error",err)
+	}
+	dirs:="dirs="+parentVolume
+	cmd:=exec.Command("mount","-t ","aufs","-o",dirs,"none",containerVolume)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		log.Errorf("%v", err)
+	}
+}
+
 
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)

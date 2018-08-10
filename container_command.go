@@ -29,6 +29,10 @@ var runCommand=cli.Command{
 			Name:"cpushare",
 			Usage:"cpushare limit",
 		},
+		cli.StringFlag{
+			Name:"v",
+			Usage:"volume map",
+		},
 	},
 	Action: func(context *cli.Context) error {
 		if len(context.Args())<1{
@@ -36,6 +40,7 @@ var runCommand=cli.Command{
 		}
 		var cmdArray []string
 		for _, arg := range context.Args() {
+			log.Infof("context arg is %s",arg)
 			cmdArray = append(cmdArray, arg)
 		}
 		tty:=context.Bool("ti")
@@ -44,7 +49,9 @@ var runCommand=cli.Command{
 			Cpushare:context.String("cpushare"),
 			Cpuset:context.String("cpuset"),
 		}
-		Run(cmdArray,tty,config)
+		volume:=context.String("v")
+
+		Run(cmdArray,tty,config,volume)
 		return nil
 	},
 }
@@ -58,5 +65,18 @@ var initCommand=cli.Command{
 		log.Infof("init command %s", cmd)
 		err:=container.RunContainerInit()
 		return err
+	},
+}
+
+var commitCommand=cli.Command{
+	Name:"commit",
+	Usage: `commit a container into image`,
+	Action: func(context *cli.Context) error {
+		if len(context.Args())<1{
+			return fmt.Errorf("missing the container command.")
+		}
+		imageName:=context.Args().Get(0)
+		commitContainer(imageName)
+		return nil
 	},
 }
