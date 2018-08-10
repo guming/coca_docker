@@ -80,7 +80,7 @@ func DeleteWriteLayer(rootURL string) {
 }
 
 func MountVolume(volumeDirs []string,mntURL string){
-	
+
 	parentVolume:=volumeDirs[0]
 	if err:=os.MkdirAll(parentVolume,0777);err!=nil{
 		log.Warnf("mkdir "+parentVolume+" error",err)
