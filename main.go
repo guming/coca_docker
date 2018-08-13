@@ -16,6 +16,8 @@ func main(){
 	app.Commands=[]cli.Command{
 		initCommand,
 		runCommand,
+		commitCommand,
+		listCommand,
 	}
 	app.Before= func(context *cli.Context) error {
 		log.SetFormatter(&log.JSONFormatter{})
