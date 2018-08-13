@@ -17,6 +17,10 @@ var runCommand=cli.Command{
 			Name:"ti",
 			Usage:"tty enabled",
 		},
+		cli.BoolFlag{
+			Name:"d",
+			Usage:"detach container",
+		},
 		cli.StringFlag{
 			Name:"m",
 			Usage:"memory limit",
@@ -33,6 +37,10 @@ var runCommand=cli.Command{
 			Name:"v",
 			Usage:"volume map",
 		},
+		cli.StringFlag{
+			Name:"name",
+			Usage:"container name",
+		},
 	},
 	Action: func(context *cli.Context) error {
 		if len(context.Args())<1{
@@ -44,14 +52,18 @@ var runCommand=cli.Command{
 			cmdArray = append(cmdArray, arg)
 		}
 		tty:=context.Bool("ti")
+		detach:=context.Bool("d")
+		if tty && detach {
+			return fmt.Errorf("tty and detach are both true.")
+		}
 		config:=&subsystems.ResourceConfig{
 			MemoryLimit:context.String("m"),
 			Cpushare:context.String("cpushare"),
 			Cpuset:context.String("cpuset"),
 		}
 		volume:=context.String("v")
-
-		Run(cmdArray,tty,config,volume)
+		name:=context.String("name")
+		Run(cmdArray,tty,config,volume,detach,name)
 		return nil
 	},
 }
@@ -77,6 +89,15 @@ var commitCommand=cli.Command{
 		}
 		imageName:=context.Args().Get(0)
 		commitContainer(imageName)
+		return nil
+	},
+}
+
+var listCommand=cli.Command{
+	Name:"ps",
+	Usage:"list containers",
+	Action: func(context *cli.Context) error{
+		listContainer()
 		return nil
 	},
 }
