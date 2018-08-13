@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"github.com/coca_docker/cgroup"
 )
 
 func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume string,detach bool,name string){
@@ -21,10 +20,10 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 		log.Errorf("container start err %v",err)
 	}
 	//cgroup
-	cgroupManager:=cgroup.NewCgroupManager("coca-docker")
-	defer cgroupManager.Destory()
-	cgroupManager.Set(config)
-	cgroupManager.Apply(process.Process.Pid)
+	//cgroupManager:=cgroup.NewCgroupManager("coca-docker")
+	//defer cgroupManager.Destory()
+	//cgroupManager.Set(config)
+	//cgroupManager.Apply(process.Process.Pid)
 	sendCommandToChild(writepip,command)
 	//record container into config.json
 	containerName,err:=recordContainerInfo(process.Process.Pid,name,command)
