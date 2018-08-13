@@ -14,8 +14,12 @@ import (
 	"github.com/coca_docker/cgroup"
 )
 
-func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume string,detach bool,name string){
-	process,writepip:=container.NewParentProcess(tty,volume)
+func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume string,detach bool,containerName string){
+	containerID := randStringBytes(10)
+	if containerName == "" {
+		containerName = containerID
+	}
+	process,writepip:=container.NewParentProcess(tty,volume,containerName)
 	err:=process.Start()
 	if err!=nil{
 		log.Errorf("container start err %v",err)
@@ -27,7 +31,7 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 	cgroupManager.Apply(process.Process.Pid)
 	sendCommandToChild(writepip,command)
 	//record container into config.json
-	containerName,err:=recordContainerInfo(process.Process.Pid,name,command)
+	containerName,err=recordContainerInfo(process.Process.Pid,containerName,command)
 	if err!=nil{
 		log.Errorf("recordContainerInfo error %v",err)
 		return
@@ -50,14 +54,14 @@ func sendCommandToChild(pip *os.File,command []string){
 }
 
 func recordContainerInfo(containerPID int,cname string,command []string) (string,error){
-	cid:=randStringBytes(10)
-	creatTime:=time.Now().Format("2000-01-01 01:01:45")
-	if cname==""{
-		cname=cid
-	}
+	//cid:=randStringBytes(10)
+	creatTime:=time.Now().Format("2016-01-02 08:05:45")
+	//if cname==""{
+	//	cname=cid
+	//}
 	containerInfo:=&container.ContainerInfo{
 		Pid:strconv.Itoa(containerPID),
-		Id:cid,
+		Id:cname,
 		Name:cname,
 		CreatedTime:creatTime,
 		Status:container.RUNNING,
