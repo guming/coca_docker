@@ -101,3 +101,16 @@ var listCommand=cli.Command{
 		return nil
 	},
 }
+
+var logsCommand=cli.Command {
+	Name:"logs",
+	Usage:"container logs output",
+	Action: func(context *cli.Context) error {
+		if len(context.Args())<1{
+			return fmt.Errorf("missing the container command.")
+		}
+		containerName:=context.Args().Get(0)
+		logsContainer(containerName)
+		return nil
+	},
+}

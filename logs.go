@@ -1,6 +1,0 @@
-package main
-
-
-func logsContainer(){
-
-}

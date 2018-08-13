@@ -17,6 +17,7 @@ var (
 	Exit                string = "exited"
 	DefaultInfoLocation string = "/var/run/mydocker/%s/"
 	ConfigName          string = "config.json"
+	ContainerLogFile	string = "container.log"
 )
 
 type ContainerInfo struct {
@@ -28,7 +29,7 @@ type ContainerInfo struct {
 	Status      string `json:"status"`     //容器的状态
 }
 
-func NewParentProcess(tty bool,volume string) (*exec.Cmd,*os.File){
+func NewParentProcess(tty bool,volume string,containerName string) (*exec.Cmd,*os.File){
 
 	readpip, writepip, err := NewPipe()
 
@@ -44,14 +45,26 @@ func NewParentProcess(tty bool,volume string) (*exec.Cmd,*os.File){
 		cmd.Stdin=os.Stdin
 		cmd.Stdout=os.Stdout
 		cmd.Stderr=os.Stderr
+	}else{
+		dirURL := fmt.Sprintf(DefaultInfoLocation, containerName)
+		if err := os.MkdirAll(dirURL, 0622); err != nil {
+			log.Errorf("new parent process mkdir %s error %v", dirURL, err)
+			return nil, nil
+		}
+		stdLogFilePath := dirURL + ContainerLogFile
+		stdLogFile, err := os.Create(stdLogFilePath)
+		if err != nil {
+			log.Errorf("new parent process create file %s error %v", stdLogFilePath, err)
+			return nil, nil
+		}
+		cmd.Stdout = stdLogFile
 	}
 	cmd.ExtraFiles=[]*os.File{readpip}
-	//cmd.Dir="/root/busybox"
-	mntURL := "/root/mnt/"
-	rootURL := "/root/"
-
-	NewWorkSpace(rootURL, mntURL,volume)
-	cmd.Dir = mntURL
+	cmd.Dir="/root/busybox"
+	//mntURL := "/root/mnt/"
+	//rootURL := "/root/"
+	//NewWorkSpace(rootURL, mntURL,volume)
+	//cmd.Dir = mntURL
 	return cmd,writepip
 }
 
