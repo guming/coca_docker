@@ -31,7 +31,7 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 	cgroupManager.Apply(process.Process.Pid)
 	sendCommandToChild(writepip,command)
 	//record container into config.json
-	containerName,err=recordContainerInfo(process.Process.Pid,containerName,command)
+	containerName,err=recordContainerInfo(process.Process.Pid,containerName,command,containerID)
 	if err!=nil{
 		log.Errorf("recordContainerInfo error %v",err)
 		return
@@ -53,7 +53,7 @@ func sendCommandToChild(pip *os.File,command []string){
 	pip.Close()
 }
 
-func recordContainerInfo(containerPID int,cname string,command []string) (string,error){
+func recordContainerInfo(containerPID int,cname string,command []string,containerId string) (string,error){
 	//cid:=randStringBytes(10)
 	creatTime:=time.Now().Format("2016-01-02 08:05:45")
 	//if cname==""{
@@ -61,7 +61,7 @@ func recordContainerInfo(containerPID int,cname string,command []string) (string
 	//}
 	containerInfo:=&container.ContainerInfo{
 		Pid:strconv.Itoa(containerPID),
-		Id:cname,
+		Id:containerId,
 		Name:cname,
 		CreatedTime:creatTime,
 		Status:container.RUNNING,

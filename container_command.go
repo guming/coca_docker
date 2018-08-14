@@ -66,8 +66,8 @@ var runCommand=cli.Command{
 			Cpuset:context.String("cpuset"),
 		}
 		volume:=context.String("v")
-		name:=context.String("name")
-		Run(cmdArray,tty,config,volume,detach,name)
+		containerName:=context.String("name")
+		Run(cmdArray,tty,config,volume,detach,containerName)
 		return nil
 	},
 }
