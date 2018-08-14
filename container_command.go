@@ -6,7 +6,11 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/coca_docker/container"
 	"github.com/coca_docker/cgroup/subsystems"
+	"os"
 )
+
+const ENV_EXEC_PID = "mydocker_pid"
+const ENV_EXEC_CMD = "mydocker_cmd"
 
 var runCommand=cli.Command{
 	Name:"run",
@@ -114,3 +118,31 @@ var logsCommand=cli.Command {
 		return nil
 	},
 }
+
+var execCommand=cli.Command {
+	Name:"exec",
+	Usage:"exec container",
+	Action: func(context *cli.Context) error {
+		env_pid:=os.Getenv(ENV_EXEC_PID)
+		if env_pid!=""{
+			log.Infof("pid callback pid %s",os.Getgid())
+			return nil
+		}
+		if len(context.Args())<2{
+			return fmt.Errorf("missing the container command.")
+		}
+		containerName:=context.Args().Get(0)
+
+		var cmdArray []string
+		for _, arg := range context.Args().Tail() {
+			log.Infof("context arg is %s",arg)
+			cmdArray = append(cmdArray, arg)
+		}
+		execContainer(containerName,cmdArray)
+
+		return nil
+	},
+}
+
+
+
