@@ -9,6 +9,7 @@ import (
 	"strings"
 	"os/exec"
 	"os"
+	_ "github.com/xianlubird/mydocker/nsenter"
 )
 
 func execContainer (containerName string,command []string){
