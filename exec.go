@@ -23,17 +23,17 @@ func execContainer (containerName string,command []string){
 	log.Infof("container pid %s", pid)
 	log.Infof("command %s", commandstr)
 
-	os.Setenv(ENV_EXEC_CMD,commandstr)
-	os.Setenv(ENV_EXEC_PID,pid)
 
 	cmd:=exec.Command("/proc/self/exe","exec")
 	cmd.Stderr=os.Stderr
 	cmd.Stdout=os.Stdout
 	cmd.Stdin=os.Stdin
 
+	os.Setenv(ENV_EXEC_CMD,commandstr)
+	os.Setenv(ENV_EXEC_PID,pid)
+
 	if err:=cmd.Run();err!=nil {
 		log.Errorf("exec failed %v",err)
-		return
 	}
 }
 

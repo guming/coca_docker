@@ -123,11 +123,12 @@ var execCommand=cli.Command {
 	Name:"exec",
 	Usage:"exec container",
 	Action: func(context *cli.Context) error {
-		env_pid:=os.Getenv(ENV_EXEC_PID)
-		if env_pid!=""{
-			log.Infof("pid callback pid %s",os.Getgid())
+
+		if os.Getenv(ENV_EXEC_PID) != "" {
+			log.Infof("pid callback pid %d", os.Getgid())
 			return nil
 		}
+
 		if len(context.Args())<2{
 			return fmt.Errorf("missing the container command.")
 		}
