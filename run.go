@@ -32,14 +32,14 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 	cgroupManager.Apply(process.Process.Pid)
 	sendCommandToChild(writepip,command)
 	//record container into config.json
-	containerName,err=recordContainerInfo(process.Process.Pid,containerName,command,containerID,imageName)
+	containerName,err=recordContainerInfo(process.Process.Pid,containerName,command,containerID,imageName,volume)
 	if err!=nil{
 		log.Errorf("recordContainerInfo error %v",err)
 		return
 	}
 	if tty {
 		process.Wait()
-		container.DeleteWorkSpace(containerName,imageName,volume)
+		container.DeleteWorkSpace(containerName,volume)
 		deleteContainerInfo(containerName)
 	}
 	//os.Exit(-1)
@@ -52,7 +52,8 @@ func sendCommandToChild(pip *os.File,command []string){
 	pip.Close()
 }
 
-func recordContainerInfo(containerPID int,cname string,command []string,containerId string,imageName string) (string,error){
+func recordContainerInfo(containerPID int,cname string,command []string,containerId string,
+	imageName string,volume string) (string,error){
 	//cid:=randStringBytes(10)
 	creatTime:=time.Now().Format("2016-01-02 08:05:45")
 	containerInfo:=&container.ContainerInfo{
@@ -63,6 +64,7 @@ func recordContainerInfo(containerPID int,cname string,command []string,containe
 		Status:container.RUNNING,
 		Command:strings.Join(command," "),
 		ImageName:imageName,
+		Volume:volume,
 	}
 	jsonBytes,err:=json.Marshal(containerInfo)
 	if err!=nil{

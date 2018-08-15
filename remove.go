@@ -21,4 +21,5 @@ func removeContainer (containerName string) {
 		log.Errorf("remove dirURL %s error %v", dirURL, err)
 		return
 	}
+	container.DeleteWorkSpace(containerName,cinfo.Volume)
 }

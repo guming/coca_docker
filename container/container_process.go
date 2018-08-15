@@ -28,6 +28,7 @@ type ContainerInfo struct {
 	CreatedTime string `json:"createTime"` //创建时间
 	Status      string `json:"status"`     //容器的状态
 	ImageName   string `json:"ImageName"` //容器镜像
+	Volume		string `json:"Volume"`    //容器卷
 }
 
 var (
@@ -188,16 +189,15 @@ func NewWorkSpace(containerName string, imageName string,volume string) {
 }
 
 //Delete the AUFS filesystem while container exit
-func DeleteWorkSpace(containerName string, imageName string,volume string) {
+func DeleteWorkSpace(containerName string,volume string) {
 	var volumeDir=""
 	if volume!="" && len(volume)>1 {
 		volumeDirs:=strings.Split(volume,":")
 		volumeDir=volumeDirs[1]
 	}
-	rootURL:=RootURL+"/"+imageName
 	mntURL:=fmt.Sprintf(MntURL,containerName)
 	DeleteMountPoint(volumeDir, mntURL)
-	DeleteWriteLayer(rootURL)
+	DeleteWriteLayer(containerName)
 
 }
 
