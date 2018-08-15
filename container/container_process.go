@@ -182,7 +182,7 @@ func NewWorkSpace(containerName string, imageName string,volume string) {
 	if volume!="" && len(volume)>1 {
 		volumeDirs:=strings.Split(volume,":")
 		if len(volumeDirs)>1{
-			MountVolume(volumeDirs,MntURL)
+			MountVolume(volumeDirs,containerName)
 		}
 	}
 }

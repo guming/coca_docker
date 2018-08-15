@@ -167,10 +167,7 @@ var stopCommand=cli.Command{
 			return fmt.Errorf("missing the container command.")
 		}
 		containerName:=context.Args().Get(0)
-
-
 		stopContainer(containerName)
-
 		return nil
 	},
 }

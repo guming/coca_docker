@@ -16,7 +16,7 @@ func CreateReadOnlyLayer(imageName string) {
 		log.Infof("fail to judge whether dir %s exists. %v", busyboxURL, err)
 	}
 	if exist == false {
-		if err := os.Mkdir(busyboxURL, 0777); err != nil {
+		if err := os.MkdirAll(busyboxURL, 0777); err != nil {
 			log.Errorf("mkdir dir %s error. %v", busyboxURL, err)
 		}
 		if _, err := exec.Command("tar", "-xvf", busyboxTarURL, "-C", busyboxURL).CombinedOutput(); err != nil {
@@ -27,14 +27,14 @@ func CreateReadOnlyLayer(imageName string) {
 
 func CreateWriteLayer(containerName string) {
 	writeURL := fmt.Sprintf(WriteLayer,containerName)
-	if err := os.Mkdir(writeURL, 0777); err != nil {
+	if err := os.MkdirAll(writeURL, 0777); err != nil {
 		log.Errorf("mkdir dir %s error. %v", writeURL, err)
 	}
 }
 
 func CreateMountPoint(imageName string, containerName string) {
 	mnt :=fmt.Sprintf(MntURL,containerName)
-	if err := os.Mkdir(mnt, 0777); err != nil {
+	if err := os.MkdirAll(mnt, 0777); err != nil {
 		log.Errorf("mkdir dir %s error. %v", mnt, err)
 	}
 	wdir:=fmt.Sprintf(WriteLayer,containerName)
