@@ -57,7 +57,7 @@ func DeleteMountPoint(volume string, containerName string){
 	mnt :=fmt.Sprintf(MntURL,containerName)
 	log.Infof("volume:%s",volume)
 	if volume!=""{
-		cmd := exec.Command("umount", mnt+volume)
+		cmd := exec.Command("umount", mnt+"/"+volume)
 		cmd.Stdout=os.Stdout
 		cmd.Stderr=os.Stderr
 		if err := cmd.Run(); err != nil {
