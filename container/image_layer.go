@@ -10,7 +10,7 @@ import (
 
 func CreateReadOnlyLayer(imageName string) {
 	busyboxURL := RootURL + "/" +imageName +"/"
-	busyboxTarURL := RootURL + imageName + ".tar"
+	busyboxTarURL := RootURL + "/" +imageName + ".tar"
 	exist, err := PathExists(busyboxURL)
 	if err != nil {
 		log.Infof("fail to judge whether dir %s exists. %v", busyboxURL, err)
