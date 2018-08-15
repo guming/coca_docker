@@ -16,42 +16,50 @@ var runCommand=cli.Command{
 	Name:"run",
 	Usage: `Create a container with namespace and cgroups limit
 			coca_docker run -ti [command]`,
-	Flags:[]cli.Flag{
-		cli.BoolFlag{
+	Flags:[]cli.Flag {
+		cli.BoolFlag {
 			Name:"ti",
 			Usage:"tty enabled",
 		},
-		cli.BoolFlag{
+		cli.BoolFlag {
 			Name:"d",
 			Usage:"detach container",
 		},
-		cli.StringFlag{
+		cli.StringFlag {
 			Name:"m",
 			Usage:"memory limit",
 		},
-		cli.StringFlag{
+		cli.StringFlag {
 			Name:"cpuset",
 			Usage:"cpuset limit",
 		},
-		cli.StringFlag{
+		cli.StringFlag {
 			Name:"cpushare",
 			Usage:"cpushare limit",
 		},
-		cli.StringFlag{
+		cli.StringFlag {
 			Name:"v",
 			Usage:"volume map",
 		},
-		cli.StringFlag{
+		cli.StringFlag {
 			Name:"name",
 			Usage:"container name",
 		},
+		cli.StringSliceFlag {
+			Name:"e",
+			Usage:"set env",
+		},
 	},
 	Action: func(context *cli.Context) error {
+
 		if len(context.Args())<1{
 			return fmt.Errorf("missing the container command.")
 		}
+
 		var cmdArray []string
-		for _, arg := range context.Args() {
+		imageName:=context.Args().Get(0)
+		log.Infof("image name is %s",imageName)
+		for _, arg := range context.Args().Tail() {
 			log.Infof("context arg is %s",arg)
 			cmdArray = append(cmdArray, arg)
 		}
@@ -66,8 +74,12 @@ var runCommand=cli.Command{
 			Cpuset:context.String("cpuset"),
 		}
 		volume:=context.String("v")
+
 		containerName:=context.String("name")
-		Run(cmdArray,tty,config,volume,detach,containerName)
+		envSlice:=context.StringSlice("e")
+
+		Run(cmdArray,tty,config,volume,detach,containerName,imageName,envSlice)
+
 		return nil
 	},
 }
@@ -114,7 +126,7 @@ var logsCommand=cli.Command {
 			return fmt.Errorf("missing the container command.")
 		}
 		containerName:=context.Args().Get(0)
-		logsContainer(containerName)
+		logContainer(containerName)
 		return nil
 	},
 }
@@ -145,5 +157,36 @@ var execCommand=cli.Command {
 	},
 }
 
+var stopCommand=cli.Command{
+	Name:"stop",
+	Usage:"stop the container",
+	Action: func(context *cli.Context) error {
+
+		if len(context.Args())<2{
+			return fmt.Errorf("missing the container command.")
+		}
+		containerName:=context.Args().Get(0)
+
+
+		stopContainer(containerName)
+
+		return nil
+	},
+}
+
+var removeCommand=cli.Command{
+	Name:"rm",
+	Usage:"remove the container",
+	Action: func(context *cli.Context) error {
+
+		if len(context.Args())<2{
+			return fmt.Errorf("missing the container command.")
+		}
+		containerName:=context.Args().Get(0)
+		removeContainer(containerName)
+
+		return nil
+	},
+}
 
 

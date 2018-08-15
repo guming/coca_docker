@@ -27,9 +27,16 @@ type ContainerInfo struct {
 	Command     string `json:"command"`    //容器内init运行命令
 	CreatedTime string `json:"createTime"` //创建时间
 	Status      string `json:"status"`     //容器的状态
+	ImageName   string `json:"ImageName"` //容器镜像
 }
 
-func NewParentProcess(tty bool,volume string,containerName string) (*exec.Cmd,*os.File){
+var (
+	RootURL string = "/root"
+	MntURL string = "/root/mnt/%s"
+	WriteLayer string = "/root/writelayer/%s"
+)
+
+func NewParentProcess(tty bool,volume string,containerName string,imageName string,envSlice []string) (*exec.Cmd,*os.File){
 
 	readpip, writepip, err := NewPipe()
 
@@ -60,11 +67,12 @@ func NewParentProcess(tty bool,volume string,containerName string) (*exec.Cmd,*o
 		cmd.Stdout = stdLogFile
 	}
 	cmd.ExtraFiles=[]*os.File{readpip}
-	cmd.Dir="/root/busybox"
+	cmd.Env=envSlice
+	//cmd.Dir="/root/busybox"
 	//mntURL := "/root/mnt/"
 	//rootURL := "/root/"
-	//NewWorkSpace(rootURL, mntURL,volume)
-	//cmd.Dir = mntURL
+	NewWorkSpace(containerName, imageName,volume)
+	cmd.Dir = fmt.Sprintf(MntURL,containerName)
 	return cmd,writepip
 }
 
@@ -166,26 +174,28 @@ func setUpMount(){
 
 
 //Create a AUFS filesystem as container root workspace
-func NewWorkSpace(rootURL string, mntURL string,volume string) {
-	CreateReadOnlyLayer(rootURL)
-	CreateWriteLayer(rootURL)
-	CreateMountPoint(rootURL, mntURL)
+func NewWorkSpace(containerName string, imageName string,volume string) {
+	CreateReadOnlyLayer(imageName)
+	CreateWriteLayer(containerName)
+	CreateMountPoint(imageName, containerName)
 
 	if volume!="" && len(volume)>1 {
 		volumeDirs:=strings.Split(volume,":")
 		if len(volumeDirs)>1{
-			MountVolume(volumeDirs,mntURL)
+			MountVolume(volumeDirs,MntURL)
 		}
 	}
 }
 
 //Delete the AUFS filesystem while container exit
-func DeleteWorkSpace(rootURL string, mntURL string,volume string) {
+func DeleteWorkSpace(containerName string, imageName string,volume string) {
 	var volumeDir=""
 	if volume!="" && len(volume)>1 {
 		volumeDirs:=strings.Split(volume,":")
 		volumeDir=volumeDirs[1]
 	}
+	rootURL:=RootURL+"/"+imageName
+	mntURL:=fmt.Sprintf(MntURL,containerName)
 	DeleteMountPoint(volumeDir, mntURL)
 	DeleteWriteLayer(rootURL)
 

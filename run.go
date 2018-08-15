@@ -14,12 +14,13 @@ import (
 	"github.com/coca_docker/cgroup"
 )
 
-func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume string,detach bool,containerName string){
+func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume string,
+	detach bool,containerName string,imageName string,envSlice []string){
 	containerID := randStringBytes(10)
 	if containerName == "" {
 		containerName = containerID
 	}
-	process,writepip:=container.NewParentProcess(tty,volume,containerName)
+	process,writepip:=container.NewParentProcess(tty,volume,containerName,imageName,envSlice)
 	err:=process.Start()
 	if err!=nil{
 		log.Errorf("container start err %v",err)
@@ -31,7 +32,7 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 	cgroupManager.Apply(process.Process.Pid)
 	sendCommandToChild(writepip,command)
 	//record container into config.json
-	containerName,err=recordContainerInfo(process.Process.Pid,containerName,command,containerID)
+	containerName,err=recordContainerInfo(process.Process.Pid,containerName,command,containerID,imageName)
 	if err!=nil{
 		log.Errorf("recordContainerInfo error %v",err)
 		return
@@ -40,7 +41,7 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 		process.Wait()
 		//mntURL := "/root/mnt/"
 		//rootURL := "/root/"
-		//container.DeleteWorkSpace(rootURL,mntURL,volume)
+		container.DeleteWorkSpace(containerName,imageName,volume)
 		deleteContainerInfo(containerName)
 	}
 	//os.Exit(-1)
@@ -53,12 +54,9 @@ func sendCommandToChild(pip *os.File,command []string){
 	pip.Close()
 }
 
-func recordContainerInfo(containerPID int,cname string,command []string,containerId string) (string,error){
+func recordContainerInfo(containerPID int,cname string,command []string,containerId string,imageName string) (string,error){
 	//cid:=randStringBytes(10)
 	creatTime:=time.Now().Format("2016-01-02 08:05:45")
-	//if cname==""{
-	//	cname=cid
-	//}
 	containerInfo:=&container.ContainerInfo{
 		Pid:strconv.Itoa(containerPID),
 		Id:containerId,
@@ -66,6 +64,7 @@ func recordContainerInfo(containerPID int,cname string,command []string,containe
 		CreatedTime:creatTime,
 		Status:container.RUNNING,
 		Command:strings.Join(command," "),
+		ImageName:imageName,
 	}
 	jsonBytes,err:=json.Marshal(containerInfo)
 	if err!=nil{
