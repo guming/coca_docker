@@ -163,7 +163,7 @@ var stopCommand=cli.Command{
 	Usage:"stop the container",
 	Action: func(context *cli.Context) error {
 
-		if len(context.Args())<2{
+		if len(context.Args())<1{
 			return fmt.Errorf("missing the container command.")
 		}
 		containerName:=context.Args().Get(0)
@@ -180,7 +180,7 @@ var removeCommand=cli.Command{
 	Usage:"remove the container",
 	Action: func(context *cli.Context) error {
 
-		if len(context.Args())<2{
+		if len(context.Args())<1{
 			return fmt.Errorf("missing the container command.")
 		}
 		containerName:=context.Args().Get(0)
