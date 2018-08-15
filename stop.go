@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/prometheus/common/log"
 	"syscall"
 	"strconv"
 	"fmt"
 	"encoding/json"
 	"github.com/coca_docker/container"
 	"io/ioutil"
+	log "github.com/sirupsen/logrus"
 )
 
 func stopContainer (containerName string) {
