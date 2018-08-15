@@ -39,8 +39,6 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 	}
 	if tty {
 		process.Wait()
-		//mntURL := "/root/mnt/"
-		//rootURL := "/root/"
 		container.DeleteWorkSpace(containerName,imageName,volume)
 		deleteContainerInfo(containerName)
 	}
