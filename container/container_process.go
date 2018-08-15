@@ -195,8 +195,8 @@ func DeleteWorkSpace(containerName string,volume string) {
 		volumeDirs:=strings.Split(volume,":")
 		volumeDir=volumeDirs[1]
 	}
-	mntURL:=fmt.Sprintf(MntURL,containerName)
-	DeleteMountPoint(volumeDir, mntURL)
+	//mntURL:=fmt.Sprintf(MntURL,containerName)
+	DeleteMountPoint(volumeDir, containerName)
 	DeleteWriteLayer(containerName)
 
 }
