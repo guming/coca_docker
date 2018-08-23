@@ -14,6 +14,6 @@ func TestAllocate(t *testing.T) {
 
 func TestRelease(t *testing.T) {
 	ip, ipnet, _ := net.ParseCIDR("192.168.0.1/24")
-	logrus.Printf("ip %",ip.String())
+	logrus.Printf("ip %s ",ip.String())
 	ipAllocator.Release(ipnet, &ip)
 }
