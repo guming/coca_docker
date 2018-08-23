@@ -107,6 +107,7 @@ func (ipam *IPAM) Release(subnet *net.IPNet,ipaddr *net.IP) error{
 	err := ipam.load()
 	if err != nil {
 		log.Errorf("error release ipam info, %v", err)
+		return err
 	}
 	c := 0
 	releaseIP := ipaddr.To4()
