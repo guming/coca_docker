@@ -20,11 +20,12 @@ var ipAllocator = &IPAM{
 }
 
 func (ipam *IPAM) load() error{
-	_,err:=os.Stat(ipam.SubnetAllocatorPath)
-	if os.IsNotExist(err) {
-		return nil
-	} else {
-		return err
+	if _,err:=os.Stat(ipam.SubnetAllocatorPath);err!=nil {
+		if os.IsNotExist(err) {
+			return nil
+		} else {
+			return err
+		}
 	}
 	jsonfile,err:=os.Open(ipam.SubnetAllocatorPath)
 	defer jsonfile.Close()
