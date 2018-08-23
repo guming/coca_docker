@@ -40,7 +40,7 @@ func (ipam *IPAM) load() error{
 
 	err=json.Unmarshal(subnetjson[:n],ipam.Subnets)
 	if err!=nil{
-		log.Errorf("error load json info, %v", err)
+		log.Errorf("error load ipam json info, %v", err)
 		return err
 	}
 	return nil
@@ -56,6 +56,7 @@ func (ipam *IPAM) dump() error{
 		}
 	}
 	jsonfile,err:=os.OpenFile(ipam.SubnetAllocatorPath,os.O_TRUNC|os.O_CREATE|os.O_WRONLY,0644)
+	defer jsonfile.Close()
 	if err!=nil {
 		return err
 	}
@@ -65,7 +66,7 @@ func (ipam *IPAM) dump() error{
 	}
 	_,err=jsonfile.Write(jsonbyte)
 	if err!=nil {
-		log.Errorf("error dump info, %v", err)
+		log.Errorf("error dump ipam info, %v", err)
 		return err
 	}
 	return nil
@@ -76,7 +77,7 @@ func (ipam *IPAM) Allocate (subnet *net.IPNet) (ip net.IP,err error) {
 	ipam.Subnets=&map[string]string{}
 	err=ipam.load()
 	if err!=nil{
-		log.Errorf("error allocation info, %v", err)
+		log.Errorf("error allocation ipam info, %v", err)
 	}
 	n,size:=subnet.Mask.Size()
 	if _,flag:=(*ipam.Subnets)[subnet.String()];!flag{
@@ -98,14 +99,14 @@ func (ipam *IPAM) Allocate (subnet *net.IPNet) (ip net.IP,err error) {
 	ipam.dump()
 	return
 }
-func (ipam *IPAM) Release(subnet *net.IPNet,ipaddr net.IP) error{
+func (ipam *IPAM) Release(subnet *net.IPNet,ipaddr *net.IP) error{
 
 	ipam.Subnets=&map[string]string{}
 	_, subnet, _ = net.ParseCIDR(subnet.String())
 
 	err := ipam.load()
 	if err != nil {
-		log.Errorf("error release info, %v", err)
+		log.Errorf("error release ipam info, %v", err)
 	}
 	c := 0
 	releaseIP := ipaddr.To4()
