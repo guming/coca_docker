@@ -117,7 +117,7 @@ func (ipam *IPAM) Release(subnet *net.IPNet,ipaddr *net.IP) error{
 	}
 
 	ipalloc := []byte((*ipam.Subnets)[subnet.String()])
-	log.Infof("c is %d",c)
+	log.Infof("c is %d and ipalloc is %s",c,string(ipalloc))
 	ipalloc[c] = '0'
 	(*ipam.Subnets)[subnet.String()] = string(ipalloc)
 
