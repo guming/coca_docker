@@ -27,17 +27,17 @@ func (ipam *IPAM) load() error{
 		return err
 	}
 	jsonfile,err:=os.Open(ipam.SubnetAllocatorPath)
+	defer jsonfile.Close()
 	if err!=nil{
 		return err
 	}
-	defer jsonfile.Close()
 	subnetjson:=make([]byte,2000)
 	n,err:=jsonfile.Read(subnetjson)
 
 	if err!=nil{
 		return err
 	}
-
+	log.Infof("values is %s",string(subnetjson[:n]))
 	err=json.Unmarshal(subnetjson[:n],ipam.Subnets)
 	if err!=nil{
 		log.Errorf("error load ipam json info, %v", err)
