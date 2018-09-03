@@ -50,7 +50,7 @@ var runCommand=cli.Command{
 			Name:"e",
 			Usage:"set env",
 		},
-		cli.StringFlag{
+		cli.StringSliceFlag{
 			Name:"p",
 			Usage:"port mapping",
 		},
