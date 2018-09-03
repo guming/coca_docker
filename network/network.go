@@ -48,6 +48,7 @@ type NetworkDriver interface {
 }
 
 func (nw *Network) load (dumpPath string) error{
+	log.Infof("dump path is %s",dumpPath)
 	if _,err:=os.Stat(dumpPath);err!=nil {
 		if os.IsNotExist(err) {
 			return nil
