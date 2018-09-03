@@ -19,6 +19,7 @@ func (bd *BridgeNetworkDriver) Name() string {
 
 func (bd *BridgeNetworkDriver) Create(subnet string,name string) (*Network,error) {
 	ip,ipRange,err:=net.ParseCIDR(subnet)
+	log.Infof("ip & iprange %s %s",ip.String(),ipRange.String())
 	if err!=nil{
 		return nil,err
 	}
