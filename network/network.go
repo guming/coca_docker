@@ -204,7 +204,7 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 	}
 	err=drivers[nw.Driver].Connect(enp,nw)
 	if err!=nil{
-		log.Errorf("network connect error %v %s %s ",err,nw.IpRange.String(),&nw.IpRange.IP.String())
+		log.Errorf("network connect error %v %s %s ",err,nw.IpRange.String(),nw.IpRange.IP.String())
 		ipAllocator.Release(nw.IpRange,&nw.IpRange.IP)
 		return err
 	}
