@@ -12,12 +12,6 @@ func TestAllocate(t *testing.T) {
 	t.Logf("alloc ip: %v", ip)
 }
 
-func TestLoad(t *testing.T) {
-	err:=ipAllocator.load()
-	if err!=nil{
-		logrus.Printf(err.Error())
-	}
-}
 
 func TestRelease(t *testing.T) {
 	ip, ipnet, _ := net.ParseCIDR("192.168.0.1/24")
