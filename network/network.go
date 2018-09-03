@@ -84,7 +84,8 @@ func (nw *Network) dump (dumpPath string) error{
 			return err
 		}
 	}
-	jsonfile,err:=os.OpenFile(dumpPath,os.O_TRUNC|os.O_CREATE|os.O_WRONLY,0644)
+	nwPath := path.Join(dumpPath, nw.Name)
+	jsonfile,err:=os.OpenFile(nwPath,os.O_TRUNC|os.O_CREATE|os.O_WRONLY,0644)
 	defer jsonfile.Close()
 	if err!=nil {
 		return err
@@ -135,7 +136,7 @@ func Init() error {
 		}
 
 		if err := nw.load(nwPath); err != nil {
-			log.Errorf("error load network: %s", err)
+			log.Errorf("error load network: %v", err)
 		}
 
 		networks[nwName] = nw
