@@ -12,10 +12,11 @@ import (
 	"fmt"
 	"strconv"
 	"github.com/coca_docker/cgroup"
+	"github.com/coca_docker/network"
 )
 
 func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume string,
-	detach bool,containerName string,imageName string,envSlice []string){
+	detach bool,containerName string,imageName string,envSlice []string,nw string,portmapping []string){
 	containerID := randStringBytes(10)
 	if containerName == "" {
 		containerName = containerID
@@ -25,18 +26,35 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 	if err!=nil{
 		log.Errorf("container start err %v",err)
 	}
-	//cgroup
-	cgroupManager:=cgroup.NewCgroupManager("coca-docker")
-	defer cgroupManager.Destory()
-	cgroupManager.Set(config)
-	cgroupManager.Apply(process.Process.Pid)
-	sendCommandToChild(writepip,command)
 	//record container into config.json
 	containerName,err=recordContainerInfo(process.Process.Pid,containerName,command,containerID,imageName,volume)
 	if err!=nil{
 		log.Errorf("recordContainerInfo error %v",err)
 		return
 	}
+
+	//cgroup
+	cgroupManager:=cgroup.NewCgroupManager("coca-docker")
+	defer cgroupManager.Destory()
+	cgroupManager.Set(config)
+	cgroupManager.Apply(process.Process.Pid)
+
+	if nw!=""{
+		network.Init()
+		cinfo:=&container.ContainerInfo{
+			Pid:strconv.Itoa(process.Process.Pid),
+			Name:containerName,
+			PortMapping:portmapping,
+			Id:containerID,
+		}
+		if err:=network.Connect(nw,cinfo);err!=nil {
+			log.Errorf("network connect error %v",err)
+			return
+		}
+	}
+
+	sendCommandToChild(writepip,command)
+
 	if tty {
 		process.Wait()
 		container.DeleteWorkSpace(containerName,volume)

@@ -12,12 +12,11 @@ func TestAllocate(t *testing.T) {
 	t.Logf("alloc ip: %v", ip)
 }
 
-func Testload(t *testing.T) {
+func TestLoad(t *testing.T) {
 	err:=ipAllocator.load()
 	if err!=nil{
 		logrus.Printf(err.Error())
 	}
-
 }
 
 func TestRelease(t *testing.T) {

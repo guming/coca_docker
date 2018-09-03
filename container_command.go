@@ -7,6 +7,7 @@ import (
 	"github.com/coca_docker/container"
 	"github.com/coca_docker/cgroup/subsystems"
 	"os"
+	"github.com/coca_docker/network"
 )
 
 const ENV_EXEC_PID = "mydocker_pid"
@@ -49,6 +50,14 @@ var runCommand=cli.Command{
 			Name:"e",
 			Usage:"set env",
 		},
+		cli.StringFlag{
+			Name:"p",
+			Usage:"port mapping",
+		},
+		cli.StringFlag{
+			Name:"net",
+			Usage:"container network",
+		},
 	},
 	Action: func(context *cli.Context) error {
 
@@ -78,7 +87,10 @@ var runCommand=cli.Command{
 		containerName:=context.String("name")
 		envSlice:=context.StringSlice("e")
 
-		Run(cmdArray,tty,config,volume,detach,containerName,imageName,envSlice)
+		network := context.String("net")
+		portmapping := context.StringSlice("p")
+
+		Run(cmdArray,tty,config,volume,detach,containerName,imageName,envSlice,network,portmapping)
 
 		return nil
 	},
@@ -187,4 +199,65 @@ var removeCommand=cli.Command{
 	},
 }
 
+
+var networkCommand=cli.Command{
+	Name:"network",
+	Usage:"container network",
+	Subcommands:[]cli.Command{
+		{
+			Name:"create",
+			Usage:"create a container network",
+			Flags:[]cli.Flag{
+				cli.StringFlag{
+					Name:"driver",
+					Usage:"network driver",
+				},
+				cli.StringFlag{
+					Name:"subnet",
+					Usage:"subnet cidr",
+				},
+			},
+			Action: func(context *cli.Context) error {
+
+				if len(context.Args())<1{
+					return fmt.Errorf("missing the container command.")
+				}
+				network.Init()
+				dirver:=context.String("driver")
+				subnet_cidr:=context.String("subnet")
+				networkName:=context.Args().Get(0)
+				if err:=network.CreateNetwork(dirver,networkName,subnet_cidr);err!=nil{
+					log.Errorf("create network error %v",err)
+				}
+				return nil
+			},
+		},
+		{
+			Name: "list",
+			Usage: "list container network",
+			Action:func(context *cli.Context) error {
+				network.Init()
+				network.ListNetwork()
+				return nil
+			},
+		},
+		{
+			Name:"remove",
+			Usage:"remove the container network",
+			Action: func(context *cli.Context) error {
+
+				if len(context.Args())<1{
+					return fmt.Errorf("missing the container command.")
+				}
+				network.Init()
+				networkName:=context.Args().Get(0)
+				if err:=network.DeleteNetwork(networkName);err!=nil{
+					log.Errorf("remove network error %v",err)
+				}
+				return nil
+			},
+		},
+	},
+
+}
 
