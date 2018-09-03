@@ -129,9 +129,10 @@ func setInterfaceIP(bname string,ipnet string) error {
 		log.Infof("error retrieving new bridge netlink link %s  retrying2", bname)
 		time.Sleep(2 * time.Second)
 	}
-	if err!=nil{
-		return err
+	if err != nil {
+		return fmt.Errorf("Abandoning retrieving the new bridge link from netlink, Run [ ip link ] to troubleshoot the error: %v", err)
 	}
+	log.Infof("setup ip is %s",ipnet)
 	ipn,err:=netlink.ParseIPNet(ipnet)
 	if err!=nil{
 		return err
