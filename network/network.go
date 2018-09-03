@@ -226,7 +226,7 @@ func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.Container
 	pname:=endpoint.Device.PeerName
 	peerlink,_:=netlink.LinkByName(pname)
 	ipnet:=endpoint.IPAddress.String()
-	defer enterContainerNetNS(&peerlink,cinfo)
+	defer enterContainerNetNS(*peerlink,cinfo)
 	err:=setInterfaceIP(pname,ipnet)
 	if err!=nil{
 		return err
@@ -262,7 +262,7 @@ func enterContainerNetNS(link *netlink.Link,cinfo *container.ContainerInfo) func
 	}
 	nsfd:=f.Fd()
 	runtime.LockOSThread()
-	if err:=netlink.LinkSetNsFd(link,int(nsfd));err!=nil{
+	if err:=netlink.LinkSetNsFd(*link,int(nsfd));err!=nil{
 		log.Errorf("error set nsfd, %v", err)
 	}
 
