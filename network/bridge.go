@@ -47,16 +47,18 @@ func (bd *BridgeNetworkDriver) Delete (network Network) error {
 }
 
 func (bd *BridgeNetworkDriver) Connect (endpoint *Endpoint,nw *Network) error {
-	br,_:=netlink.LinkByName(nw.Name)
-
+	br,err:=netlink.LinkByName(nw.Name)
+	if err != nil {
+		return err
+	}
 	la:=netlink.NewLinkAttrs()
 	la.Name=endpoint.ID[:5]
 	//put the veth to bridge
 	la.MasterIndex=br.Attrs().Index
 	//Veth peer
-	endpoint.Device=netlink.Veth{la,"cif-"+la.Name}
+	endpoint.Device=netlink.Veth{LinkAttrs:la,PeerName:"cif-"+endpoint.ID[:5]}
 	//create veth
-	err:=netlink.LinkAdd(&endpoint.Device)
+	err=netlink.LinkAdd(&endpoint.Device)
 	if err!=nil {
 		return err
 	}

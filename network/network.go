@@ -189,7 +189,10 @@ func ListNetwork() {
 
 func Connect(networkName string,cinfo *container.ContainerInfo) error {
 
-	nw:=networks[networkName]
+	nw,ok:=networks[networkName]
+	if !ok {
+		return fmt.Errorf("no such network: %s", networkName)
+	}
 	//allocate new ip for container
 	ip,err:=ipAllocator.Allocate(nw.IpRange)
 	if err!=nil{
