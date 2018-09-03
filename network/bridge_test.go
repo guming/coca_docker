@@ -30,6 +30,7 @@ func TestConnect(t *testing.T) {
 	}
 	d := BridgeNetworkDriver{}
 	n, err := d.Create("10.50.0.1/24", "testbridge1")
+	t.Logf("ip & iprange %s %s testing.",n.IpRange.String(),n.IpRange.IP.String())
 	t.Logf("err: %v", n)
 	Init()
 	networks[n.Name] = n
