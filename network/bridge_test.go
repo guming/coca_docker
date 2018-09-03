@@ -26,7 +26,7 @@ func TestBridgeNetworkDriver_Connect(t *testing.T) {
 func TestConnect(t *testing.T) {
 	cInfo := &container.ContainerInfo{
 		Id: "testcontainer",
-		Pid: "16000",
+		Pid: "36000",
 	}
 	d := BridgeNetworkDriver{}
 	nw:=Network{
