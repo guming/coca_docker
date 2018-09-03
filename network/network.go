@@ -229,15 +229,18 @@ func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.Container
 	defer enterContainerNetNS(&peerlink,cinfo)
 	err:=setInterfaceIP(pname,ipnet)
 	if err!=nil{
+		log.Errorf("setInterfaceIP error %v",err)
 		return err
 	}
 	err=setInterfaceUP(pname)
 	if err!=nil{
+		log.Errorf("setInterfaceUP error %v %s",err,pname)
 		return err
 	}
 	//set up lo veth
 	err=setInterfaceUP("lo")
 	if err!=nil{
+		log.Errorf("setInterfaceUP error %v lo",err)
 		return err
 	}
 	//route config;all the traffics through the bridge(driver)
@@ -250,6 +253,7 @@ func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.Container
 	//add route
 	err=netlink.RouteAdd(route)
 	if err!=nil{
+		log.Errorf("configIpAddrRouteForEndpoint RouteAdd error %v",err)
 		return err
 	}
 	return nil

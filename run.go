@@ -48,7 +48,7 @@ func Run(command []string,tty bool,config *subsystems.ResourceConfig,volume stri
 			Id:containerID,
 		}
 		if err:=network.Connect(nw,cinfo);err!=nil {
-			log.Errorf("network connect error %v",err)
+			log.Errorf("run network connect error %v",err)
 			return
 		}
 	}
