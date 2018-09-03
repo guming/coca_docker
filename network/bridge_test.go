@@ -25,15 +25,11 @@ func TestBridgeNetworkDriver_Connect(t *testing.T) {
 
 func TestConnect(t *testing.T) {
 	cInfo := &container.ContainerInfo{
-		Id: "testcontainer",
+		Id: "testcontainer1",
 		Pid: "36000",
 	}
 	d := BridgeNetworkDriver{}
-	nw:=Network{
-		Name:"testbridge",
-	}
-	d.Delete(nw)
-	n, err := d.Create("10.30.0.1/24", "testbridge")
+	n, err := d.Create("10.50.0.1/24", "testbridge1")
 	t.Logf("err: %v", n)
 	Init()
 	networks[n.Name] = n
