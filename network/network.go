@@ -226,7 +226,7 @@ func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.Container
 	pname:=endpoint.Device.PeerName
 	peerlink,_:=netlink.LinkByName(pname)
 	ipnet:=endpoint.IPAddress.String()
-	defer enterContainerNetNS(*peerlink,cinfo)
+	defer enterContainerNetNS(&peerlink,cinfo)
 	err:=setInterfaceIP(pname,ipnet)
 	if err!=nil{
 		return err
