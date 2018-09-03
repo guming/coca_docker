@@ -49,18 +49,12 @@ type NetworkDriver interface {
 
 func (nw *Network) load (dumpPath string) error{
 	log.Infof("dump path is %s",dumpPath)
-	if _,err:=os.Stat(dumpPath);err!=nil {
-		if os.IsNotExist(err) {
-			return nil
-		} else {
-			return err
-		}
-	}
-	jsonfile,err:=os.Open(path.Join(dumpPath,nw.Name))
+
+	jsonfile,err:=os.Open(dumpPath)
+	defer jsonfile.Close()
 	if err!=nil{
 		return err
 	}
-	defer jsonfile.Close()
 	subnetjson:=make([]byte,2000)
 	n,err:=jsonfile.Read(subnetjson)
 
@@ -135,7 +129,7 @@ func Init() error {
 		nw := &Network{
 			Name: nwName,
 		}
-
+		log.Infof("network path is %s",nwPath)
 		if err := nw.load(nwPath); err != nil {
 			log.Errorf("error load network: %v", err)
 		}
