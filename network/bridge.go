@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 	"os/exec"
-	"github.com/xianlubird/mydocker/network"
 )
 
 type BridgeNetworkDriver struct {
