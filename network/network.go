@@ -195,6 +195,7 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 	if err!=nil{
 		return err
 	}
+	log.Infof("0 nw iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
 	//create endpoint for container
 	enp:=&Endpoint{
 		ID:fmt.Sprintf("%s-%s", cinfo.Id, networkName),
