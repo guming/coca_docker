@@ -189,6 +189,7 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 	if !ok {
 		return fmt.Errorf("no such network: %s", networkName)
 	}
+	log.Infof("nw iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
 	//allocate new ip for container
 	ip,err:=ipAllocator.Allocate(nw.IpRange)
 	if err!=nil{
@@ -229,6 +230,8 @@ func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.Container
 	defer enterContainerNetNS(&peerlink,cinfo)
 	interfaceIP := *endpoint.Network.IpRange
 	interfaceIP.IP = endpoint.IPAddress
+	log.Infof("interfaceip is %s",interfaceIP.String())
+
 	err:=setInterfaceIP(pname,interfaceIP.String())
 	if err!=nil{
 		log.Errorf("setInterfaceIP error %v",err)
