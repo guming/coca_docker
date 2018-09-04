@@ -39,7 +39,7 @@ func (ipam *IPAM) load() error{
 		log.Errorf("error read ipam json info, %v", err)
 		return err
 	}
-	log.Infof("values is %s",string(subnetjson[:n]))
+	//log.Infof("values is %s",string(subnetjson[:n]))
 	err=json.Unmarshal(subnetjson[:n],ipam.Subnets)
 	if err!=nil{
 		log.Errorf("error load ipam json info, %v", err)
@@ -82,6 +82,7 @@ func (ipam *IPAM) Allocate (subnet *net.IPNet) (ip net.IP,err error) {
 		log.Errorf("error allocation ipam info, %v", err)
 	}
 	n,size:=subnet.Mask.Size()
+	log.Infof("mask n is %d and size is %d",n,size)
 	if _,flag:=(*ipam.Subnets)[subnet.String()];!flag{
 		(*ipam.Subnets)[subnet.String()]=strings.Repeat("0",1<<uint8(size-n))
 	}
@@ -99,6 +100,7 @@ func (ipam *IPAM) Allocate (subnet *net.IPNet) (ip net.IP,err error) {
 		}
 	}
 	ipam.dump()
+	log.Infof("return ip is %s",ip.String())
 	return
 }
 func (ipam *IPAM) Release(subnet *net.IPNet,ipaddr *net.IP) error{
