@@ -225,7 +225,7 @@ func Disconnect(networkName string, cinfo *container.ContainerInfo) error {
 func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.ContainerInfo) error {
 	pname:=endpoint.Device.PeerName
 	peerlink,_:=netlink.LinkByName(pname)
-	ipnet:=endpoint.Network.IpRange.String()
+	//ipnet:=endpoint.Network.IpRange.String()
 	defer enterContainerNetNS(&peerlink,cinfo)
 	interfaceIP := *endpoint.Network.IpRange
 	interfaceIP.IP = endpoint.IPAddress
