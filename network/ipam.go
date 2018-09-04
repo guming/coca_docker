@@ -39,7 +39,7 @@ func (ipam *IPAM) load() error{
 		log.Errorf("error read ipam json info, %v", err)
 		return err
 	}
-	//log.Infof("values is %s",string(subnetjson[:n]))
+	log.Infof("load values is %s",string(subnetjson[:n]))
 	err=json.Unmarshal(subnetjson[:n],ipam.Subnets)
 	if err!=nil{
 		log.Errorf("error load ipam json info, %v", err)
