@@ -100,7 +100,7 @@ func (ipam *IPAM) Allocate (subnet *net.IPNet) (ip net.IP,err error) {
 		}
 	}
 	ipam.dump()
-	log.Infof("return ip is %s",ip.String())
+	log.Infof("return ip is %s %v",ip.String(),subnet)
 	return
 }
 func (ipam *IPAM) Release(subnet *net.IPNet,ipaddr *net.IP) error{
