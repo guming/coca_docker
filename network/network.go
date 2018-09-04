@@ -204,16 +204,16 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 	}
 	err=drivers[nw.Driver].Connect(enp,nw)
 	if err!=nil{
-		log.Errorf("network connect error %v %s %s ",err,nw.IpRange.String(),nw.IpRange.IP.String())
+		log.Errorf("connect error %v %s %s ",err,nw.IpRange.String(),nw.IpRange.IP.String())
 		ipAllocator.Release(nw.IpRange,&nw.IpRange.IP)
 		return err
 	}
 	//set ip for container
 	//add route for container
 	//set netns for container
+	log.Infof("endpoit nw is %v",enp.Network)
 	err=configIpAddrRouteForEndpoint(enp,cinfo)
 	if err!=nil {
-		log.Errorf("config ipaddr route for endpoint error %v ",err)
 		return fmt.Errorf("config ipaddr route for endpoint error %v",err)
 	}
 	return configPortMapping(enp,cinfo)
