@@ -151,7 +151,7 @@ func CreateNetwork(driver string,name string,subnet string) error {
 	if err!=nil{
 		return err
 	}
-
+	log.Infof("create network ip range is %v",nw.IpRange)
 	return nw.dump(defaultNetworkPath)
 }
 
