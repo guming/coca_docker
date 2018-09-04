@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 	"os/exec"
+	"github.com/xianlubird/mydocker/network"
 )
 
 type BridgeNetworkDriver struct {
@@ -45,16 +46,22 @@ func (bd *BridgeNetworkDriver) Delete (network Network) error {
 }
 
 func (bd *BridgeNetworkDriver) Connect (endpoint *Endpoint,nw *Network) error {
-	br,err:=netlink.LinkByName(nw.Name)
+	bridgeName := nw.Name
+	br,err:=netlink.LinkByName(bridgeName)
 	if err != nil {
 		return err
 	}
+	log.Infof("4 endpoint iprange is %s and ip is %s",endpoint.Network.IpRange.String(),endpoint.Network.IpRange.IP.String())
 	la:=netlink.NewLinkAttrs()
 	la.Name=endpoint.ID[:5]
 	//put the veth to bridge
 	la.MasterIndex=br.Attrs().Index
+
 	//Veth peer
-	endpoint.Device=netlink.Veth{LinkAttrs:la,PeerName:"cif-"+endpoint.ID[:5]}
+	endpoint.Device=netlink.Veth{
+		LinkAttrs:la,
+		PeerName:"cif-"+endpoint.ID[:5],
+		}
 	//create veth
 	err=netlink.LinkAdd(&endpoint.Device)
 	if err!=nil {
@@ -65,6 +72,7 @@ func (bd *BridgeNetworkDriver) Connect (endpoint *Endpoint,nw *Network) error {
 	if err!=nil {
 		return err
 	}
+	log.Infof("5 endpoint iprange is %s and ip is %s",endpoint.Network.IpRange.String(),endpoint.Network.IpRange.IP.String())
 	return nil
 }
 
@@ -108,12 +116,12 @@ func createBridgeInterface(bname string) error{
 		return err
 	}
 
-	linkattrs:=netlink.NewLinkAttrs()
-	linkattrs.Name=bname
-	br:=&netlink.Bridge{LinkAttrs: linkattrs}
+	la:=netlink.NewLinkAttrs()
+	la.Name=bname
+
+	br:=&netlink.Bridge{LinkAttrs: la}
 	err=netlink.LinkAdd(br)
 	if err!=nil {
-		log.Errorf("create bridge interface error %v",err)
 		return fmt.Errorf("create bridge interface %s error %v",bname,err)
 	}
 	return nil
