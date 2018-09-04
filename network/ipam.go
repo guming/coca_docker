@@ -82,7 +82,7 @@ func (ipam *IPAM) Allocate (subnet *net.IPNet) (ip net.IP,err error) {
 		log.Errorf("error allocation ipam info, %v", err)
 	}
 	n,size:=subnet.Mask.Size()
-	log.Infof("mask n is %d and size is %d",n,size)
+	log.Infof("mask n is %d and size is %d and subnet is %v",n,size,subnet)
 	if _,flag:=(*ipam.Subnets)[subnet.String()];!flag{
 		(*ipam.Subnets)[subnet.String()]=strings.Repeat("0",1<<uint8(size-n))
 	}
