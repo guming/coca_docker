@@ -229,7 +229,7 @@ func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.Container
 	pname:=endpoint.Device.PeerName
 	peerlink,_:=netlink.LinkByName(pname)
 	//ipnet:=endpoint.Network.IpRange.String()
-	defer enterContainerNetNS(&peerlink,cinfo)
+	defer enterContainerNetNS(&peerlink,cinfo)()
 	interfaceIP := *endpoint.Network.IpRange
 	interfaceIP.IP = endpoint.IPAddress
 	log.Infof("interfaceip is %s",interfaceIP.String())
@@ -267,6 +267,7 @@ func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.Container
 }
 
 func enterContainerNetNS(link *netlink.Link,cinfo *container.ContainerInfo) func() {
+	log.Infof("enterContainerNetNS")
 	f,err:=os.OpenFile(fmt.Sprintf("/proc/%s/ns/net",cinfo.Pid),os.O_RDONLY,0)
 	if err!=nil{
 		log.Errorf("error get container net namespace, %v", err)
