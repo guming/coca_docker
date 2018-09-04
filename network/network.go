@@ -211,7 +211,7 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 	//set ip for container
 	//add route for container
 	//set netns for container
-	log.Infof("endpoit nw is %v",enp.Network)
+	log.Infof("endpoit nw is %v and nw is %v",enp.Network,nw)
 	err=configIpAddrRouteForEndpoint(enp,cinfo)
 	if err!=nil {
 		return fmt.Errorf("config ipaddr route for endpoint error %v",err)
