@@ -18,18 +18,16 @@ func (bd *BridgeNetworkDriver) Name() string {
 }
 
 func (bd *BridgeNetworkDriver) Create(subnet string,name string) (*Network,error) {
-	ip,ipRange,err:=net.ParseCIDR(subnet)
+	ip,ipRange,_:=net.ParseCIDR(subnet)
 	log.Infof("ip & iprange %s %s",ip.String(),ipRange.String())
-	if err!=nil{
-		return nil,err
-	}
+
 	ipRange.IP=ip
 	nw:=&Network{
 		Name:name,
 		IpRange:ipRange,
 		Driver:bd.Name(),
 	}
-	err=bd.initBridge(nw)
+	err:=bd.initBridge(nw)
 	if err!=nil{
 		log.Errorf("init bridge error %v ",err)
 	}
@@ -80,7 +78,12 @@ func (bd *BridgeNetworkDriver) initBridge(nw *Network) error {
 		log.Errorf("create bridge interface error %v ",err)
 		return err
 	}
-	if err:=setInterfaceIP(bname,nw.IpRange.String());err!=nil{
+
+	//set gateway ip
+	gatewayIP := *nw.IpRange
+	gatewayIP.IP = nw.IpRange.IP
+
+	if err:=setInterfaceIP(bname,gatewayIP.String());err!=nil{
 		log.Errorf("set interface ip error %v ",err)
 		return err
 	}
