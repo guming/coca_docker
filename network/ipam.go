@@ -82,8 +82,10 @@ func (ipam *IPAM) Allocate (subnet *net.IPNet) (ip net.IP,err error) {
 	if err!=nil{
 		log.Errorf("error allocation ipam info, %v", err)
 	}
+	//reparse
+	_, subnet, _ = net.ParseCIDR(subnet.String())
 	one,size:=subnet.Mask.Size()
-	log.Infof("mask n is %d and size is %d and subnet is %v",one,size,subnet)
+	log.Infof(" subnet is %v",subnet)
 
 	if _, exist := (*ipam.Subnets)[subnet.String()]; !exist {
 		(*ipam.Subnets)[subnet.String()] = strings.Repeat("0", 1 << uint8(size - one))

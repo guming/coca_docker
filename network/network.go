@@ -143,12 +143,13 @@ func Init() error {
 
 func CreateNetwork(driver string,name string,subnet string) error {
 	_,cidr,_:=net.ParseCIDR(subnet)
+	log.Infof("cidr range is %v",cidr)
 	gatewayIp,err:=ipAllocator.Allocate(cidr)
 	if err!=nil{
 		return err
 	}
 	cidr.IP=gatewayIp
-	log.Infof("cidr range is %v",cidr)
+	log.Infof("after gatewayip cidr range is %v",cidr)
 	nw,err:=drivers[driver].Create(cidr.String(),name)
 	if err!=nil{
 		return err
@@ -191,7 +192,7 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 	if !ok {
 		return fmt.Errorf("no such network: %s", networkName)
 	}
-	log.Infof("connet iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
+	log.Infof("connet iprange is %v",nw.IpRange)
 	//allocate new ip for container
 	ip,err:=ipAllocator.Allocate(nw.IpRange)
 	if err!=nil{
