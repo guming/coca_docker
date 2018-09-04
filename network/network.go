@@ -202,6 +202,7 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 		IPAddress:ip,
 		PortMapping:cinfo.PortMapping,
 	}
+	log.Infof("1 nw iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
 	err=drivers[nw.Driver].Connect(enp,nw)
 	if err!=nil{
 		log.Errorf("connect error %v %s %s ",err,nw.IpRange.String(),nw.IpRange.IP.String())
