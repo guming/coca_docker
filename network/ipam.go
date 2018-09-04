@@ -81,24 +81,27 @@ func (ipam *IPAM) Allocate (subnet *net.IPNet) (ip net.IP,err error) {
 	if err!=nil{
 		log.Errorf("error allocation ipam info, %v", err)
 	}
-	n,size:=subnet.Mask.Size()
-	log.Infof("mask n is %d and size is %d and subnet is %v",n,size,subnet)
-	if _,flag:=(*ipam.Subnets)[subnet.String()];!flag{
-		(*ipam.Subnets)[subnet.String()]=strings.Repeat("0",1<<uint8(size-n))
+	one,size:=subnet.Mask.Size()
+	log.Infof("mask n is %d and size is %d and subnet is %v",one,size,subnet)
+
+	if _, exist := (*ipam.Subnets)[subnet.String()]; !exist {
+		(*ipam.Subnets)[subnet.String()] = strings.Repeat("0", 1 << uint8(size - one))
 	}
-	for c:=range((*ipam.Subnets)[subnet.String()]){
-		if (*ipam.Subnets)[subnet.String()][c]=='0'{
-			ipalloc:=[]byte((*ipam.Subnets)[subnet.String()])
-			ipalloc[c]='1'
+
+	for c := range((*ipam.Subnets)[subnet.String()]) {
+		if (*ipam.Subnets)[subnet.String()][c] == '0' {
+			ipalloc := []byte((*ipam.Subnets)[subnet.String()])
+			ipalloc[c] = '1'
 			(*ipam.Subnets)[subnet.String()] = string(ipalloc)
-			ip=subnet.IP
-			for t:=uint(4);t>0;t-=1{
-				[]byte(ip)[4-t]+=uint8(c>>((t-1)*8))
+			ip = subnet.IP
+			for t := uint(4); t > 0; t-=1 {
+				[]byte(ip)[4-t] += uint8(c >> ((t - 1) * 8))
 			}
 			ip[3]+=1
 			break
 		}
 	}
+
 	ipam.dump()
 	log.Infof("return ip is %s %v",ip.String(),subnet)
 	return
