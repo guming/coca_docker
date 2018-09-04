@@ -160,7 +160,7 @@ func setInterfaceUP(bname string) error {
 }
 
 func setIpTables(bname string,ipnet string) error {
-	cmdstr:=fmt.Sprintf("-t nat -A POSTROUTING -s %s ! -o %s -j MASQUERADE", ipnet,bname)
+	cmdstr:=fmt.Sprintf(" -t nat -A POSTROUTING -s %s ! -o %s -j MASQUERADE", ipnet,bname)
 	cmd:=exec.Command("iptables",strings.Split(cmdstr," ")...)
 	result,err:=cmd.Output()
 	if err!=nil{

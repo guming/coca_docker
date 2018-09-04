@@ -15,3 +15,6 @@ init project
 ##### troubleshooting
 - XFS and AUFS 不兼容问题
 - mount -t tmpfs -o size=200M tmpfs /tmp
+
+- open the ip_forward
+- echo '1' > /proc/sys/net/ipv4/ip_forward
