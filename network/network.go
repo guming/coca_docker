@@ -67,6 +67,7 @@ func (nw *Network) load (dumpPath string) error{
 		log.Errorf("error load nw json info, %v", err)
 		return err
 	}
+	log.Infof("load nw is %v",nw)
 	return nil
 }
 
@@ -133,7 +134,7 @@ func Init() error {
 		if err := nw.load(nwPath); err != nil {
 			log.Errorf("error load network: %v", err)
 		}
-
+		log.Infof("init nw info is %v",nw)
 		networks[nwName] = nw
 		return nil
 	})
@@ -147,6 +148,7 @@ func CreateNetwork(driver string,name string,subnet string) error {
 		return err
 	}
 	cidr.IP=gatewayIp
+	log.Infof("cidr range is %v",cidr)
 	nw,err:=drivers[driver].Create(cidr.String(),name)
 	if err!=nil{
 		return err
@@ -189,13 +191,12 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 	if !ok {
 		return fmt.Errorf("no such network: %s", networkName)
 	}
-	log.Infof("nw iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
+	log.Infof("connet iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
 	//allocate new ip for container
 	ip,err:=ipAllocator.Allocate(nw.IpRange)
 	if err!=nil{
 		return err
 	}
-	log.Infof("0 nw iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
 	//create endpoint for container
 	enp:=&Endpoint{
 		ID:fmt.Sprintf("%s-%s", cinfo.Id, networkName),
@@ -203,7 +204,6 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 		IPAddress:ip,
 		PortMapping:cinfo.PortMapping,
 	}
-	log.Infof("1 nw iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
 	err=drivers[nw.Driver].Connect(enp,nw)
 	if err!=nil{
 		log.Errorf("connect error %v %s %s ",err,nw.IpRange.String(),nw.IpRange.IP.String())
@@ -213,8 +213,6 @@ func Connect(networkName string,cinfo *container.ContainerInfo) error {
 	//set ip for container
 	//add route for container
 	//set netns for container
-	log.Infof("2 nw iprange is %s and ip is %s",nw.IpRange.String(),nw.IpRange.IP.String())
-	log.Infof("3 endpoint iprange is %s and ip is %s",enp.Network.IpRange.String(),enp.Network.IpRange.IP.String())
 	err=configIpAddrRouteForEndpoint(enp,cinfo)
 	if err!=nil {
 		return fmt.Errorf("config ipaddr route for endpoint error %v",err)

@@ -19,7 +19,7 @@ func (bd *BridgeNetworkDriver) Name() string {
 
 func (bd *BridgeNetworkDriver) Create(subnet string,name string) (*Network,error) {
 	ip,ipRange,_:=net.ParseCIDR(subnet)
-	log.Infof("ip & iprange %s %s",ip.String(),ipRange.String())
+	log.Infof("Create ip & iprange %s %s",ip.String(),ipRange.String())
 
 	ipRange.IP=ip
 	nw:=&Network{
@@ -31,6 +31,7 @@ func (bd *BridgeNetworkDriver) Create(subnet string,name string) (*Network,error
 	if err!=nil{
 		log.Errorf("init bridge error %v ",err)
 	}
+	log.Infof("create nw is %v",nw)
 	return nw,err
 }
 
@@ -50,7 +51,6 @@ func (bd *BridgeNetworkDriver) Connect (endpoint *Endpoint,nw *Network) error {
 	if err != nil {
 		return err
 	}
-	log.Infof("4 endpoint iprange is %s and ip is %s",endpoint.Network.IpRange.String(),endpoint.Network.IpRange.IP.String())
 	la:=netlink.NewLinkAttrs()
 	la.Name=endpoint.ID[:5]
 	//put the veth to bridge
@@ -71,7 +71,6 @@ func (bd *BridgeNetworkDriver) Connect (endpoint *Endpoint,nw *Network) error {
 	if err!=nil {
 		return err
 	}
-	log.Infof("5 endpoint iprange is %s and ip is %s",endpoint.Network.IpRange.String(),endpoint.Network.IpRange.IP.String())
 	return nil
 }
 

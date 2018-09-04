@@ -62,6 +62,7 @@ func (ipam *IPAM) dump() error{
 	if err!=nil {
 		return err
 	}
+
 	jsonbyte,err:=json.Marshal(ipam.Subnets)
 	if err!=nil {
 		return err
