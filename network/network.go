@@ -228,7 +228,7 @@ func configIpAddrRouteForEndpoint(endpoint *Endpoint, cinfo *container.Container
 	peerlink,_:=netlink.LinkByName(pname)
 	//ipnet:=endpoint.Network.IpRange.String()
 	defer enterContainerNetNS(&peerlink,cinfo)
-	interfaceIP := *endpoint.Network.IpRange
+	interfaceIP := endpoint.Network.IpRange
 	interfaceIP.IP = endpoint.IPAddress
 	log.Infof("interfaceip is %s",interfaceIP.String())
 
